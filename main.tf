@@ -1,7 +1,7 @@
 # Creating IAM role for Kubernetes clusters to make calls to other AWS services on your behalf to manage the resources that you use with the service.
 
 resource "aws_iam_role" "my-eks-cluster-iam-role" {
-  name = "my-eks-cluster"
+  name               = "my-eks-cluster"
   assume_role_policy = <<POLICY
 {
  "Version": "2012-10-17",
@@ -33,10 +33,10 @@ resource "aws_iam_role_policy_attachment" "my-eks-cluster-AmazonEKSServicePolicy
 # Security group for network traffic to and from AWS EKS Cluster.
 # vpc id is vpc id of where we deploy this eks. either you can create new vpc else you existing vpc
 resource "aws_security_group" "my-eks-cluster-security-group" {
-  name        = "my-eks-security-group"
-  vpc_id      = "vpc-0b5cfc803796afb0c"
+  name   = "my-eks-security-group"
+  vpc_id = "vpc-0b5cfc803796afb0c"
   # Egress allows Outbound traffic from the EKS cluster to the  Internet
-  egress {                   # Outbound Rule
+  egress { # Outbound Rule
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -44,7 +44,7 @@ resource "aws_security_group" "my-eks-cluster-security-group" {
   }
   # Ingress allows Inbound traffic to EKS cluster from the  Internet
 
-  ingress {                  # Inbound Rule
+  ingress { # Inbound Rule
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -56,14 +56,14 @@ resource "aws_security_group" "my-eks-cluster-security-group" {
 
 resource "aws_eks_cluster" "my-eks-cluster" {
   name     = "my-eks-cluster"
-  role_arn =  aws_iam_role.my-eks-cluster-iam-role.arn
+  role_arn = aws_iam_role.my-eks-cluster-iam-role.arn
   version  = "1.19"
 
   # Adding VPC Configuration
 
-  vpc_config {             # Configure EKS with vpc and network settings
+  vpc_config { # Configure EKS with vpc and network settings
     security_group_ids = [aws_security_group.my-eks-cluster-security-group.id]
-    subnet_ids         = ["subnet-06150ebe214de8399","subnet-02282c8f188d625b5"]  # add your private subnet id within your vpc
+    subnet_ids         = ["subnet-06150ebe214de8399", "subnet-02282c8f188d625b5"] # add your private subnet id within your vpc
   }
 
   depends_on = [
@@ -113,7 +113,7 @@ resource "aws_eks_node_group" "my-eks-cluster-node-group" {
   cluster_name    = aws_eks_cluster.my-eks-cluster.name
   node_group_name = "my-eks-cluster-node-group"
   node_role_arn   = aws_iam_role.my-eks-nodes-iam-role.arn
-  subnet_ids      = ["subnet-06150ebe214de8399","subnet-02282c8f188d625b5"]
+  subnet_ids      = ["subnet-06150ebe214de8399", "subnet-02282c8f188d625b5"]
 
   scaling_config {
     desired_size = 1
